@@ -1,9 +1,12 @@
 package teamwork
 
-import "time"
+import (
+	"teamwork/internal/database"
+	"time"
+)
 
 // App is the interface for working with our TeamWork application.
-type App interface {}
+type App interface{}
 
 // Vertex is any entity in our graph representation for TeamWork.
 type Vertex interface {
@@ -23,10 +26,10 @@ type Edge interface {
 
 // app implements App.
 type app struct {
-
+	Db database.Database
 }
 
 // New returns a new instance of App.
 func New() (App, error) {
-	return app{}, nil
+	return app{Db: database.New()}, nil
 }
