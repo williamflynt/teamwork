@@ -2,6 +2,7 @@ package backends
 
 import (
 	"context"
+	"errors"
 	"github.com/autom8ter/dagger"
 	"teamwork/internal/teamwork"
 )
@@ -16,36 +17,56 @@ func NewDagger() (*daggerDb, error) {
 }
 
 func (d daggerDb) CreateEdge(ctx context.Context, s, p teamwork.Vertex, o teamwork.Edge) (teamwork.Fetchable, error) {
-	sPath := dagger.Path{
-		XID:   s.GetId(),
-		XType: s.Type(),
-	}
-	oPath := dagger.Path{
-		XID:   o.GetId(),
-		XType: o.Type(),
-	}
-	edgeAttrs := teamwork.GetAttrs(p)
-	edgePath := dagger.Path{
-		XID:   p.GetId(),
-		XType: p.Type(),
-	}
+	// Dagger represents edges as Nodes, with attributes.
 	edgeNode := dagger.Node{
-		Path:       edgePath,
-		Attributes: edgeAttrs,
+		Path:       toDaggerPath(p),
+		Attributes: teamwork.GetAttrs(p),
 	}
-	e, err := d.Graph.SetEdge(sPath, oPath, edgeNode)
+	e, err := d.Graph.SetEdge(toDaggerPath(s), toDaggerPath(o), edgeNode)
 	if err != nil {
-		return teamwork.Fetchable{}, nil
+		return teamwork.NewFetchable("", ""), err
 	}
-	return teamwork.Fetchable{Id: e.XID, Type: e.XType}, nil
+	return toTeamworkFetchable(e.Path), nil
 }
 
 func (d daggerDb) CreateVertex(ctx context.Context, vtx teamwork.Vertex) (teamwork.Fetchable, error) {
-	f := teamwork.GetFetchable(vtx)
-	daggerPath := dagger.Path{
-		XID:   f.Id,
-		XType: f.Type,
+	v := d.Graph.SetNode(toDaggerPath(vtx), teamwork.GetAttrs(vtx))
+	return toTeamworkFetchable(v.Path), nil
+}
+
+func (d daggerDb) GetEdge(ctx context.Context, edge teamwork.Fetchable) (teamwork.Edge, error) {
+	e, ok := d.Graph.GetEdge(toDaggerPath(edge))
+	if !ok {
+		return nil, errors.New("could not find requested edge")
 	}
-	v := d.Graph.SetNode(daggerPath, teamwork.GetAttrs(vtx))
-	return teamwork.Fetchable{Id: v.XID, Type: v.XType}, nil
+	return teamwork.NewEdge(
+		toTeamworkFetchable(e.From),
+		toTeamworkFetchable(e.To),
+		e.XType,
+	), nil
+}
+
+func (d daggerDb) GetVertex(ctx context.Context, vtx teamwork.Fetchable) (teamwork.Vertex, error) {
+	v, ok := d.Graph.GetNode(toDaggerPath(vtx))
+	if !ok {
+		return nil, errors.New("could not find requested vertex")
+	}
+	options := make([]teamwork.Option, 0)
+	for k, val := range v.Attributes {
+		options = append(options, map[string]any{k: val})
+	}
+	return teamwork.NewGenericVertex(v.XID, v.XType, options...), nil
+}
+
+// --- HELPERS ---
+
+func toDaggerPath(f teamwork.Fetchable) dagger.Path {
+	return dagger.Path{
+		XID:   f.GetId(),
+		XType: f.Type(),
+	}
+}
+
+func toTeamworkFetchable(p dagger.Path) teamwork.Fetchable {
+	return teamwork.NewFetchable(p.XID, p.XType)
 }

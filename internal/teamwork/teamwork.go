@@ -40,12 +40,6 @@ type Typer interface {
 	Type() string
 }
 
-// Fetchable allows us to get a Vertex or Edge from the database.
-type Fetchable struct {
-	Id   string `json:"id"`
-	Type string `json:"type"`
-}
-
 // --- GENERIC FUNCTIONS ---
 
 func GetAttrs[T Vertex | Edge](t T) map[string]interface{} {
@@ -60,10 +54,6 @@ func GetAttrs[T Vertex | Edge](t T) map[string]interface{} {
 		return nil
 	}
 	return *attrs
-}
-
-func GetFetchable[T Vertex](t T) Fetchable {
-	return Fetchable{Id: t.GetId(), Type: t.Type()}
 }
 
 // --- IMPLEMENT APP ---
@@ -83,7 +73,7 @@ func (a *app) Link(ctx context.Context, s Vertex, o Vertex, linkType string) (Ed
 	if err != nil {
 		return nil, err
 	}
-	if eF.Id == "" {
+	if eF.GetId() == "" {
 		return nil, errors.New("failed to insert edge during Link - no edge ID returned")
 	}
 	return e, err
@@ -97,7 +87,7 @@ func (a *app) AddEntity(ctx context.Context, vtx Vertex) (Vertex, error) {
 	if err != nil {
 		return nil, err
 	}
-	if vF.Id != vtx.GetId() {
+	if vF.GetId() != vtx.GetId() {
 		return vtx, errors.New("output and input id do not match for new vertex")
 	}
 	return vtx, nil

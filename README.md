@@ -50,6 +50,7 @@ TODO
 * [ ] User Interface
     * [ ] TUI for CRUD operations
 * [ ] Document storage - attached documents to notes as Attr
+* [ ] Drop-in replacement for `json`
 
 ### v2
 

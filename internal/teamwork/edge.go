@@ -1,6 +1,7 @@
 package teamwork
 
 import (
+	"github.com/rs/zerolog/log"
 	"github.com/segmentio/ksuid"
 	"time"
 )
@@ -24,15 +25,24 @@ type edge struct {
 	Object_     Fetchable `json:"object"`
 }
 
-func NewEdge(s, o Vertex, predicate string) *edge {
-	return &edge{
-		Id:          ksuid.New().String(),
-		CreatedUtc:  time.Now(),
-		ModifiedUtc: time.Now(),
-		Subject_:    GetFetchable(s),
-		Predicate_:  predicate,
-		Object_:     GetFetchable(o),
+func NewEdge(s, o Fetchable, predicate string, options ...Option) *edge {
+	e, err := withOptions(new(edge), options...)
+	if err != nil {
+		log.Error().Err(err).Msg("failed to apply options on new edge")
 	}
+	if e.Id == "" {
+		e.Id = ksuid.New().String()
+	}
+	if e.CreatedUtc.IsZero() {
+		e.CreatedUtc = time.Now()
+	}
+	if e.ModifiedUtc.IsZero() {
+		e.ModifiedUtc = time.Now()
+	}
+	e.Subject_ = s
+	e.Object_ = o
+	e.Predicate_ = predicate
+	return e
 }
 
 // --- IMPLEMENT EDGE ---
