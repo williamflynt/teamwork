@@ -20,6 +20,7 @@ func run() error {
 	if twErr != nil {
 		return twErr
 	}
+
 	s, sErr := server.New(tw)
 	if sErr != nil {
 		return sErr

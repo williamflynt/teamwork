@@ -2,7 +2,7 @@ package teamwork
 
 import "time"
 
-// Person is a type that represents anyone in the system, including users, contacts, bosses - anyone.
+// Person is a type that represents an individual in the system, including users, contacts, bosses - anyone.
 type Person struct {
 	Id             string    `json:"id"`
 	CreatedUtc     time.Time `json:"created_utc"`

@@ -2,7 +2,7 @@ package teamwork
 
 import "time"
 
-// VertexProperty is any arbitrary property on a Vertex.
+// VertexProperty is any arbitrary property on a Vertex that also implements Vertex.
 type VertexProperty struct {
 	Value string `json:"value"`
 }
@@ -25,4 +25,8 @@ func (v VertexProperty) Created() time.Time {
 
 func (v VertexProperty) Modified() time.Time {
 	return time.Unix(0, 0)
+}
+
+func (v VertexProperty) GetAttrs() map[string]interface{} {
+	return nil
 }
