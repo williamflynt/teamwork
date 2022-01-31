@@ -9,9 +9,9 @@ A CRM for your job.
 #### Contents
 
 1. [Quickstart](#quickstart)
-2. . 
-3. . 
-4. . 
+2. [Roadmap](#roadmap)
+3. .
+4. .
 
 ---
 
@@ -19,4 +19,27 @@ A CRM for your job.
 
 TODO
 
-## More Stuff
+## Roadmap
+
+* [ ] CRUD for first class entities (vertex)
+    * [x] Create vertex
+    * [ ] Retrieve vertex
+    * [ ] List vertex
+    * [ ] Update vertex
+    * [ ] Delete vertex
+* [ ] CRUD for edges
+    * [x] Create edges
+    * [ ] Retrieve edge
+    * [ ] List edge
+    * [ ] Update edge
+    * [ ] Delete edge
+* [ ] Storage
+    * [ ] Native graph backend
+        * [ ] Export to file
+        * [ ] Import from file
+    * [ ] SQLite backend
+    * [ ] PostgreSQL backend
+* [ ] User Interface
+    * [ ] HTTP API for CRUD operations
+    * [ ] TUI for CRUD operations
+    * [ ] Web UI for CRUD operations
