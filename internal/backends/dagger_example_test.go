@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"teamwork/internal/models"
 	"teamwork/internal/teamwork"
 	"testing"
 )
@@ -24,7 +25,7 @@ func TestDaggerDb_CreateVertex(t *testing.T) {
 	assert.Equal(t, testId, f.GetId())
 	assert.Equal(t, testType, f.Type())
 
-	v, err := d.GetVertex(ctx, teamwork.NewFetchable(testId, testType))
+	v, err := d.GetVertex(ctx, models.NewFetchable(testId, testType))
 	assert.Nil(t, err)
 	assert.Equal(t, testId, v.GetId())
 	assert.Equal(t, testType, v.Type())

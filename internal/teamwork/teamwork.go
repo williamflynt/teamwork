@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/rs/zerolog/log"
+	"teamwork/internal/backends"
 )
 
 // App is the interface for working with our TeamWork application.
@@ -16,12 +17,12 @@ type App interface {
 
 // app implements App.
 type app struct {
-	Db Database
+	Db backends.Database
 }
 
 // New returns a new instance of App.
 func New() (App, error) {
-	db, err := NewDatabase()
+	db, err := backends.NewDatabase()
 	if err != nil {
 		return nil, err
 	}
@@ -29,16 +30,6 @@ func New() (App, error) {
 }
 
 // --- INTERFACES ---
-
-// Idable has a GetId method that returns a string.
-type Idable interface {
-	GetId() string
-}
-
-// Typer has a Type method that returns a string containing the type of thing it is.
-type Typer interface {
-	Type() string
-}
 
 // --- GENERIC FUNCTIONS ---
 

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/autom8ter/dagger"
+	"teamwork/internal/models"
 	"teamwork/internal/teamwork"
 )
 
@@ -16,7 +17,7 @@ func NewDagger() (*daggerDb, error) {
 	return &daggerDb{Graph: dagger.NewGraph()}, nil
 }
 
-func (d daggerDb) CreateEdge(ctx context.Context, s, p teamwork.Vertex, o teamwork.Edge) (teamwork.Fetchable, error) {
+func (d daggerDb) CreateEdge(ctx context.Context, s, p teamwork.Vertex, o teamwork.Edge) (models.Fetchable, error) {
 	// Dagger represents edges as Nodes, with attributes.
 	edgeNode := dagger.Node{
 		Path:       toDaggerPath(p),
@@ -24,17 +25,17 @@ func (d daggerDb) CreateEdge(ctx context.Context, s, p teamwork.Vertex, o teamwo
 	}
 	e, err := d.Graph.SetEdge(toDaggerPath(s), toDaggerPath(o), edgeNode)
 	if err != nil {
-		return teamwork.NewFetchable("", ""), err
+		return models.NewFetchable("", ""), err
 	}
 	return toTeamworkFetchable(e.Path), nil
 }
 
-func (d daggerDb) CreateVertex(ctx context.Context, vtx teamwork.Vertex) (teamwork.Fetchable, error) {
+func (d daggerDb) CreateVertex(ctx context.Context, vtx teamwork.Vertex) (models.Fetchable, error) {
 	v := d.Graph.SetNode(toDaggerPath(vtx), teamwork.GetAttrs(vtx))
 	return toTeamworkFetchable(v.Path), nil
 }
 
-func (d daggerDb) GetEdge(ctx context.Context, edge teamwork.Fetchable) (teamwork.Edge, error) {
+func (d daggerDb) GetEdge(ctx context.Context, edge models.Fetchable) (teamwork.Edge, error) {
 	e, ok := d.Graph.GetEdge(toDaggerPath(edge))
 	if !ok {
 		return nil, errors.New("could not find requested edge")
@@ -46,7 +47,7 @@ func (d daggerDb) GetEdge(ctx context.Context, edge teamwork.Fetchable) (teamwor
 	), nil
 }
 
-func (d daggerDb) GetVertex(ctx context.Context, vtx teamwork.Fetchable) (teamwork.Vertex, error) {
+func (d daggerDb) GetVertex(ctx context.Context, vtx models.Fetchable) (teamwork.Vertex, error) {
 	v, ok := d.Graph.GetNode(toDaggerPath(vtx))
 	if !ok {
 		return nil, errors.New("could not find requested vertex")
@@ -60,13 +61,13 @@ func (d daggerDb) GetVertex(ctx context.Context, vtx teamwork.Fetchable) (teamwo
 
 // --- HELPERS ---
 
-func toDaggerPath(f teamwork.Fetchable) dagger.Path {
+func toDaggerPath(f models.Fetchable) dagger.Path {
 	return dagger.Path{
 		XID:   f.GetId(),
 		XType: f.Type(),
 	}
 }
 
-func toTeamworkFetchable(p dagger.Path) teamwork.Fetchable {
-	return teamwork.NewFetchable(p.XID, p.XType)
+func toTeamworkFetchable(p dagger.Path) models.Fetchable {
+	return models.NewFetchable(p.XID, p.XType)
 }

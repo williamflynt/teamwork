@@ -1,25 +1,14 @@
-package teamwork
+package models
 
-import (
-	"context"
-	"teamwork/internal/backends"
-)
-
-// Database defines the interface with the graph storage engine.
-type Database interface {
-	CreateEdge(ctx context.Context, s, p Vertex, o Edge) (Fetchable, error)
-	CreateVertex(ctx context.Context, vtx Vertex) (Fetchable, error)
-	GetEdge(ctx context.Context, edge Fetchable) (Edge, error)
-	GetVertex(ctx context.Context, vtx Fetchable) (Vertex, error)
+// Idable has a GetId method that returns a string.
+type Idable interface {
+	GetId() string
 }
 
-// NewDatabase returns a new Database using the specified underlying store.
-func NewDatabase() (Database, error) {
-	// TODO: Implement use of a connection string or similar. (wf 29 Jan 21)
-	return backends.NewDagger()
+// Typer has a Type method that returns a string containing the type of thing it is.
+type Typer interface {
+	Type() string
 }
-
-// --- EXPORTED HELPERS ---
 
 // Fetchable is something that can return values for an Id and Type.
 type Fetchable interface {

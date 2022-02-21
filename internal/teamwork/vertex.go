@@ -3,13 +3,14 @@ package teamwork
 import (
 	"encoding/json"
 	"errors"
+	"teamwork/internal/models"
 	"time"
 )
 
 // Vertex is any entity in our graph representation for TeamWork.
 type Vertex interface {
-	Idable
-	Typer
+	models.Idable
+	models.Typer
 	Created() time.Time
 	Modified() time.Time
 }
