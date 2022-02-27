@@ -27,7 +27,8 @@ type edge struct {
 }
 
 func NewEdge(s, o models.Fetchable, predicate string, options ...Option) *edge {
-	e, err := withOptions(new(edge), options...)
+	newEdge := new(edge)
+	e, err := withOptions(newEdge, options...)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to apply options on new edge")
 	}

@@ -17,11 +17,11 @@ type Vertex interface {
 
 // vertex implements Vertex.
 type vertex struct {
-	id          string
-	type_       string
-	createdUtc  time.Time
-	modifiedUtc time.Time
-	attrs       map[string]any
+	Id          string         `json:"id"`
+	Type_       string         `json:"type"`
+	CreatedUtc  time.Time      `json:"created_utc"`
+	ModifiedUtc time.Time      `json:"modified_utc"`
+	Attrs       map[string]any `json:"attrs"`
 }
 
 // NewGenericVertex returns a pointer to a new `vertex` struct, with `options` set at attrs.
@@ -29,22 +29,22 @@ type vertex struct {
 func NewGenericVertex(id, type_ string, options ...Option) *vertex {
 	attrs := resolveAttrs(options...)
 	vtx := vertex{
-		id:          id,
-		type_:       type_,
-		createdUtc:  time.Now(),
-		modifiedUtc: time.Now(),
-		attrs:       attrs,
+		Id:          id,
+		Type_:       type_,
+		CreatedUtc:  time.Now(),
+		ModifiedUtc: time.Now(),
+		Attrs:       attrs,
 	}
 	if val, ok := attrs["created_utc"]; ok {
 		t, isTime := val.(time.Time)
 		if isTime {
-			vtx.createdUtc = t
+			vtx.CreatedUtc = t
 		}
 	}
 	if val, ok := attrs["modified_utc"]; ok {
 		t, isTime := val.(time.Time)
 		if isTime {
-			vtx.createdUtc = t
+			vtx.CreatedUtc = t
 		}
 	}
 	return &vtx
@@ -53,19 +53,19 @@ func NewGenericVertex(id, type_ string, options ...Option) *vertex {
 // --- IMPLEMENT VERTEX ---
 
 func (v vertex) GetId() string {
-	return v.id
+	return v.Id
 }
 
 func (v vertex) Type() string {
-	return v.type_
+	return v.Type_
 }
 
 func (v vertex) Created() time.Time {
-	return v.createdUtc
+	return v.CreatedUtc
 }
 
 func (v vertex) Modified() time.Time {
-	return v.modifiedUtc
+	return v.ModifiedUtc
 }
 
 // --- CUSTOM JSON MARSHAL ---
@@ -79,8 +79,8 @@ func (v *vertex) MarshalJSON() ([]byte, error) {
 	if v == nil {
 		return []byte{}, errors.New("got nil pointer for vertex in MarshalJSON")
 	}
-	attrs := v.attrs
-	attrs["id"] = v.id
-	attrs["type"] = v.type_
+	attrs := v.Attrs
+	attrs["id"] = v.Id
+	attrs["type"] = v.Type_
 	return json.Marshal(attrs)
 }

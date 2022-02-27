@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/rs/zerolog/log"
-	"teamwork/internal/backends"
 )
 
 // App is the interface for working with our TeamWork application.
@@ -17,14 +16,13 @@ type App interface {
 
 // app implements App.
 type app struct {
-	Db backends.Database
+	Db Database
 }
 
 // New returns a new instance of App.
-func New() (App, error) {
-	db, err := backends.NewDatabase()
-	if err != nil {
-		return nil, err
+func New(db Database) (App, error) {
+	if db == nil {
+		return nil, errors.New("got nil for Database when creating new App - please pass in a not-nil pointer")
 	}
 	return &app{Db: db}, nil
 }
@@ -33,18 +31,18 @@ func New() (App, error) {
 
 // --- GENERIC FUNCTIONS ---
 
-func GetAttrs[T Vertex | Edge](t T) map[string]interface{} {
+func GetAttrs[T Vertex](t T) map[string]interface{} {
 	b, err := json.Marshal(t)
 	if err != nil {
 		log.Error().Err(err).Msg("failed to get attributes for graph insertion on marshal")
 		return nil
 	}
-	attrs := new(map[string]interface{})
-	if uErr := json.Unmarshal(b, attrs); uErr != nil {
+	attrs := make(map[string]interface{})
+	if uErr := json.Unmarshal(b, &attrs); uErr != nil {
 		log.Error().Err(err).Msg("failed to get attributes for graph insertion on unmarshal")
 		return nil
 	}
-	return *attrs
+	return attrs
 }
 
 // --- IMPLEMENT APP ---

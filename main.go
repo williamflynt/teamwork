@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/rs/zerolog/log"
 	"os"
+	"teamwork/internal/backends"
 	"teamwork/internal/server"
 	"teamwork/internal/teamwork"
 )
@@ -16,7 +17,12 @@ func main() {
 }
 
 func run() error {
-	tw, twErr := teamwork.New()
+	// TODO: Get database type and config from our application config. (wf 5 Feb 22)
+	db, err := backends.NewDagger()
+	if err != nil {
+		return err
+	}
+	tw, twErr := teamwork.New(db)
 	if twErr != nil {
 		return twErr
 	}

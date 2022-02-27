@@ -21,7 +21,7 @@ func (o Option) asOptionFunc() func(Option) Option {
 
 // --- UNEXPORTED HELPERS ---
 
-func applyAttrs[T *struct{}](p T, opts Option) error {
+func applyAttrs[T any](p T, opts Option) error {
 	attrBytes, _ := json.Marshal(opts)
 	if err := json.Unmarshal(attrBytes, p); err != nil {
 		return errors.New("failed to apply options on pointer")
@@ -37,7 +37,7 @@ func resolveAttrs(options ...Option) Option {
 	return attrs
 }
 
-func withOptions[T *struct{}](p T, options ...Option) (T, error) {
+func withOptions[T any](p T, options ...Option) (T, error) {
 	attrs := resolveAttrs(options...)
 	err := applyAttrs(p, attrs)
 	return p, err
